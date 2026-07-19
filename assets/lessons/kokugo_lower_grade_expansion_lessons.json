@@ -237,6 +237,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g1_001_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 1,
+              "skillTags": [
+                "content",
+                "place"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "ゆうとは、げんかんで何をしましたか。",
+              "choices": [
+                "くつをはきました。",
+                "本をよみました。",
+                "スープをのみました。",
+                "花を見つけました。"
+              ],
+              "answerIndex": 0,
+              "explanation": "本文には、ゆうとはげんかんでくつをはいたと書いてあります。場所としたことをいっしょに見つけましょう。",
+              "evidenceText": "げんかんでくつをはくと、おかあさんが『ハンカチはあるかな』とききました。",
+              "wrongChoiceExplanations": [
+                "正解です。げんかんでしたことは、くつをはくことです。",
+                "本はランドセルに入れました。げんかんでしたことではありません。",
+                "スープをのむ場面はありません。",
+                "花を見つける場面はありません。"
+              ],
+              "thinkingSteps": [
+                "『げんかんで』のあとを読む",
+                "ゆうとがしたことを見つける",
+                "本文と選択肢をくらべる"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -471,6 +511,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g1_002_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 1,
+              "skillTags": [
+                "content",
+                "evidence"
+              ],
+              "questionFormat": "evidence_choice",
+              "type": "evidence",
+              "question": "スープがあたたかいと分かるものはどれですか。",
+              "choices": [
+                "ゆげがのぼっています。",
+                "なべがからです。",
+                "まどがあいています。",
+                "ゆかがぬれています。"
+              ],
+              "answerIndex": 0,
+              "explanation": "あたたかいものからは、ゆげが出ます。本文の『ゆげがふわりとのぼっています』が手がかりです。",
+              "evidenceText": "ゆげがふわりとのぼっています。",
+              "wrongChoiceExplanations": [
+                "正解です。ゆげがのぼるようすから、あたたかいと分かります。",
+                "なべがからだとは書いてありません。",
+                "まどのことは書いてありません。",
+                "ゆかがぬれたとは書いてありません。"
+              ],
+              "thinkingSteps": [
+                "あたたかさが分かるようすを考える",
+                "本文から同じようすを探す",
+                "書いてないことは選ばない"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -714,6 +794,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g1_003_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 1,
+              "skillTags": [
+                "sequence",
+                "content"
+              ],
+              "questionFormat": "ordering",
+              "type": "sequence",
+              "question": "さきがりくをよんだあと、二人はどうしましたか。",
+              "choices": [
+                "花をつまずに、しゃがんで見ました。",
+                "きょうしつへもどりました。",
+                "花に水をあげました。",
+                "たんぽぽをつみました。"
+              ],
+              "answerIndex": 0,
+              "explanation": "りくをよんだ次の文に、二人は花をつまずにしゃがんで見たと書いてあります。",
+              "evidenceText": "二人は花をつまずに、しゃがんで見ました。",
+              "wrongChoiceExplanations": [
+                "正解です。りくをよんだあとの出来事です。",
+                "きょうしつへもどるとは書いてありません。",
+                "水をあげるとは書いてありません。",
+                "二人は花をつみませんでした。"
+              ],
+              "thinkingSteps": [
+                "りくをよんだ文を見つける",
+                "そのすぐあとの文を読む",
+                "二人がしたことを選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -952,6 +1072,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g1_004_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 1,
+              "skillTags": [
+                "evidence",
+                "content"
+              ],
+              "questionFormat": "reason_choice",
+              "type": "reason",
+              "question": "二人がゆっくりあるいたのは、何をよけたからですか。",
+              "choices": [
+                "みずたまり",
+                "大きな石",
+                "じてんしゃ",
+                "おちば"
+              ],
+              "answerIndex": 0,
+              "explanation": "本文には、二人はみずたまりをよけながら歩いたと書いてあります。",
+              "evidenceText": "二人は、みずたまりをよけながらゆっくりあるきました。",
+              "wrongChoiceExplanations": [
+                "正解です。みずたまりをよけたので、ゆっくり歩きました。",
+                "大きな石は出てきません。",
+                "じてんしゃは出てきません。",
+                "おちばは出てきません。"
+              ],
+              "thinkingSteps": [
+                "『ゆっくり』がある文を探す",
+                "何をよけたか読む",
+                "本文にあるものを選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -1198,6 +1358,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g1_005_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 1,
+              "skillTags": [
+                "content",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "せんせいの『たいせつに読んでね』に合う読み方はどれですか。",
+              "choices": [
+                "本をよごさずに読みます。",
+                "本にらくがきをします。",
+                "本をなげてあそびます。",
+                "本を雨の中におきます。"
+              ],
+              "answerIndex": 0,
+              "explanation": "『たいせつに読む』とは、本をよごしたりこわしたりしないで読むことです。",
+              "evidenceText": "せんせいは『たいせつに読んでね』と言いました。",
+              "wrongChoiceExplanations": [
+                "正解です。本をよごさずに読むことは、たいせつにする読み方です。",
+                "らくがきをすると本をたいせつにできません。",
+                "本をなげるのは、たいせつにする行動ではありません。",
+                "雨の中におくと本がぬれてしまいます。"
+              ],
+              "thinkingSteps": [
+                "せんせいのことばを読む",
+                "『たいせつ』の意味を考える",
+                "本を守る行動を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -1686,6 +1886,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g2_001_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 2,
+              "skillTags": [
+                "reason",
+                "evidence"
+              ],
+              "questionFormat": "reason_choice",
+              "type": "reason",
+              "question": "二人が黒板消しもそろえたのは、何のためですか。",
+              "choices": [
+                "次の人が使いやすくするため",
+                "休み時間を長くするため",
+                "先生をおどろかせるため",
+                "台をかくすため"
+              ],
+              "answerIndex": 0,
+              "explanation": "本文に『次の人が使いやすいように』と、目的がはっきり書かれています。",
+              "evidenceText": "二人は、次の人が使いやすいように、黒板消しもそろえて置きました。",
+              "wrongChoiceExplanations": [
+                "正解です。次に使う人のことを考えた行動です。",
+                "休み時間を長くするとは書いてありません。",
+                "先生をおどろかせるためではありません。",
+                "台をかくすためではありません。"
+              ],
+              "thinkingSteps": [
+                "黒板消しをそろえた文を探す",
+                "『ように』の前を読む",
+                "行動の目的を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -1936,6 +2176,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g2_002_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 2,
+              "skillTags": [
+                "content",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "『これは窓につるしておくの』の『これ』は何ですか。",
+              "choices": [
+                "てるてるぼうず",
+                "すいとう",
+                "ぼうし",
+                "えんぴつ"
+              ],
+              "answerIndex": 0,
+              "explanation": "すぐ前に、弟がてるてるぼうずについて聞いています。『これ』は、そのてるてるぼうずです。",
+              "evidenceText": "おやつを入れようとしたとき、弟のけんが『てるてるぼうずも持っていくの』と聞きました。",
+              "wrongChoiceExplanations": [
+                "正解です。直前に話していたてるてるぼうずを指しています。",
+                "すいとうは机に並べた持ち物です。",
+                "ぼうしも持ち物ですが、窓につるすものではありません。",
+                "えんぴつはあとで入れわすれに気づいた物です。"
+              ],
+              "thinkingSteps": [
+                "『これ』の前の会話を読む",
+                "二人が何について話しているか考える",
+                "窓につるす物を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -2202,6 +2482,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g2_003_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 2,
+              "skillTags": [
+                "feeling",
+                "evidence"
+              ],
+              "questionFormat": "reason_choice",
+              "type": "reason",
+              "question": "さちが朝顔の絵もかいたのは、何のためですか。",
+              "choices": [
+                "やさしい気もちをつたえるため",
+                "手紙を早く終わらせるため",
+                "先生に絵を見せるため",
+                "朝顔を数えるため"
+              ],
+              "answerIndex": 0,
+              "explanation": "本文に、やさしい気もちがつたわるように絵をかいたと書かれています。",
+              "evidenceText": "さちは手紙を読み返し、やさしい気もちがつたわるように、朝顔の小さな絵もかきました。",
+              "wrongChoiceExplanations": [
+                "正解です。あかりを思うやさしさをつたえるためです。",
+                "手紙を早く終わらせるためではありません。",
+                "先生に見せるためではありません。",
+                "朝顔を数えるためではありません。"
+              ],
+              "thinkingSteps": [
+                "絵をかいた文を探す",
+                "『ように』の前を読む",
+                "さちの目的を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -2452,6 +2772,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g2_004_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 2,
+              "skillTags": [
+                "content",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "店の人の『うちの水道を使っていいよ』は、どんな意味ですか。",
+              "choices": [
+                "水をくんでよいということ",
+                "花を持って帰ってよいということ",
+                "店で休んでよいということ",
+                "じょうろをすててよいということ"
+              ],
+              "answerIndex": 0,
+              "explanation": "りょうの水がなくなったときの言葉なので、店の水道から水をくんでよいという意味です。",
+              "evidenceText": "とちゅうで水がなくなると、近くの店の人が『うちの水道を使っていいよ』と声をかけてくれました。",
+              "wrongChoiceExplanations": [
+                "正解です。なくなった水を店の水道でくめます。",
+                "花を持ち帰る話ではありません。",
+                "店で休む話ではありません。",
+                "じょうろをすてる話ではありません。"
+              ],
+              "thinkingSteps": [
+                "言葉の前に起きたことを読む",
+                "何がなくなったか確かめる",
+                "店の人が助けた内容を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -2710,6 +3070,46 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "lower_expansion_g2_005_p001_test_q001",
+              "mode": "normal",
+              "difficulty": 2,
+              "skillTags": [
+                "vocabulary",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "vocabulary",
+              "question": "『それぞれ好きなことをしていました』とは、どんなようすですか。",
+              "choices": [
+                "みんなが一人ずつ好きなことをしている",
+                "みんなが同じ紙ひこうきを作っている",
+                "みんなが外で走っている",
+                "みんなが何もしないで待っている"
+              ],
+              "answerIndex": 0,
+              "explanation": "『それぞれ』は、一人一人が別に、という意味です。はじめは各自で好きなことをしていました。",
+              "evidenceText": "はじめは、それぞれ好きなことをしていましたが、ゆうきが作った紙ひこうきを見て、みんなも作りたくなりました。",
+              "wrongChoiceExplanations": [
+                "正解です。『それぞれ』は、一人一人が別にするようすです。",
+                "同じ紙ひこうきを作るのは、このあとの出来事です。",
+                "強い雨なので外では遊べません。",
+                "折り紙や本で、好きなことをしていました。"
+              ],
+              "thinkingSteps": [
+                "『それぞれ』のある文を読む",
+                "文の前半と後半を分ける",
+                "はじめのようすを選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }

@@ -185,14 +185,21 @@ export function makeDisplayQuestion(question, sessionSeed) {
   };
 }
 
-export function buildQuestionRefsForGrade(lessons, grade) {
+export function buildQuestionRefsForGrade(lessons, grade, { includeTestOnly = false } = {}) {
   const gradeNumber = Number(grade);
-  return allQuestionRefs(lessons).filter(({ lesson, question }) => {
+  const allowedTags = gradeNumber <= 2
+    ? new Set(["content", "character", "sequence", "feeling", "evidence"])
+    : gradeNumber <= 4
+      ? new Set(["content", "character", "sequence", "reason", "feeling", "vocabulary", "evidence", "cause_effect"])
+      : new Set(["content", "reason", "feeling", "vocabulary", "summary", "theme", "evidence", "cause_effect", "contrast", "choice_trap", "description_framework", "abstract_concrete"]);
+  return allQuestionRefs(lessons, { includeTestOnly }).filter(({ lesson, question }) => {
     if (!targetGrades(lesson).includes(gradeNumber)) return false;
     if (gradeNumber <= 2 && (isAozora(lesson) || lesson.notRecommendedForLowerGrades)) return false;
     if (gradeNumber <= 4 && isAozora(lesson) && !lesson.lessonId.startsWith("aozora_middle_")) return false;
     if (gradeNumber >= 5 && isAozora(lesson) && lesson.lessonId.startsWith("aozora_middle_")) return false;
-    return Array.isArray(question.choices) && question.choices.length === 4;
+    const tags = Array.isArray(question.skillTags) ? question.skillTags : [];
+    const tagMatches = tags.length === 0 || tags.some((tag) => allowedTags.has(tag));
+    return tagMatches && Array.isArray(question.choices) && question.choices.length === 4;
   });
 }
 

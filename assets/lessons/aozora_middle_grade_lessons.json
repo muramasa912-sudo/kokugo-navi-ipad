@@ -3080,6 +3080,47 @@
               ],
               "humanReviewStatus": "approved_for_middle_grade_assets",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "aozora_middle_g4_001_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 4,
+              "skillTags": [
+                "contrast",
+                "cause_effect",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "雨が降る前と降った後の田畑の変化として正しいものはどれですか。",
+              "choices": [
+                "乾いて枯れかけた田畑が、水を得て作物が伸びた",
+                "水でいっぱいだった田畑が、雨で乾いた",
+                "作物が伸びていた田畑が、雨で枯れた",
+                "何も変わらず、村人も心配し続けた"
+              ],
+              "answerIndex": 0,
+              "explanation": "ひでりで乾いていた田畑は、大雨の後、水を得て作物が生き返ったように伸びました。",
+              "evidenceText": "川の水はいっぱいになり、水田にはたっぷり水がたまり、畑の土は黒くしめり、作物は生き返ったように伸び上がりました。",
+              "wrongChoiceExplanations": [
+                "正解です。雨の前後の田畑の変化をまとめています。",
+                "変化の向きが反対です。",
+                "雨の後、作物は伸び上がりました。",
+                "田畑は変化し、村人は喜びました。"
+              ],
+              "thinkingSteps": [
+                "ひでりの場面を読む",
+                "雨の後の田畑を読む",
+                "前後の変化が合う選択肢を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -3361,6 +3402,47 @@
               ],
               "humanReviewStatus": "approved_for_middle_grade_assets",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "aozora_middle_g4_002_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 4,
+              "skillTags": [
+                "contrast",
+                "content",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "ただのたかと、よだかに対する小鳥の態度はどう違いますか。",
+              "choices": [
+                "ただのたかは恐れるが、よだかには悪口を言う",
+                "ただのたかには悪口を言い、よだかは恐れる",
+                "どちらにも同じように親しくする",
+                "どちらも見ただけで逃げてしまう"
+              ],
+              "answerIndex": 0,
+              "explanation": "小鳥は、ただのたかなら恐れて隠れますが、よだかには正面から悪口を言っています。",
+              "evidenceText": "おお、よだかでないただのたかならば、こんな生はんかのちいさい鳥は、もう名前を聞いただけでも、ぶるぶるふるえて、顔色を変えて、からだをちぢめて、木の葉のかげにでもかくれたでしょう。",
+              "wrongChoiceExplanations": [
+                "正解です。たかへの恐れと、よだかへの軽い扱いが対比されています。",
+                "ただのたかとよだかへの態度が反対です。",
+                "よだかには悪口を言っているため、親しくしていません。",
+                "よだかからは逃げず、悪口を言っています。"
+              ],
+              "thinkingSteps": [
+                "よだかへの小鳥の態度を読む",
+                "ただのたかならどうするか読む",
+                "二つの態度をくらべる"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -3761,6 +3843,47 @@
               ],
               "humanReviewStatus": "approved_for_middle_grade_assets",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "aozora_middle_g4_003_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 4,
+              "skillTags": [
+                "contrast",
+                "feeling",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "feeling",
+              "question": "冬の間と今日の阿部時夫のようすの違いはどれですか。",
+              "choices": [
+                "冬は青ざめてふるえ、今日は元気に笑っている",
+                "冬は笑っていて、今日は寒さでふるえている",
+                "冬も今日も、ずっと同じ顔をしている",
+                "冬は外にいて、今日は学校を休んでいる"
+              ],
+              "answerIndex": 0,
+              "explanation": "冬には寒さで青ざめてふるえていましたが、今日は生き生きと笑っています。",
+              "evidenceText": "冬中いつも唇が青ざめて、がたがたふるえていた阿部時夫などが、今日はまるでいきいきした顔いろになってにかにかにかにか笑っています。",
+              "wrongChoiceExplanations": [
+                "正解です。冬と今日の表情やようすが対比されています。",
+                "冬と今日のようすが反対です。",
+                "本文では、冬と今日のようすが大きく変わっています。",
+                "学校を休んだとは書いてありません。"
+              ],
+              "thinkingSteps": [
+                "冬のようすを探す",
+                "『今日は』のあとのようすを読む",
+                "二つを正しくくらべた選択肢を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -4056,6 +4179,47 @@
               ],
               "humanReviewStatus": "approved_for_middle_grade_assets",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "aozora_middle_g4_004_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 4,
+              "skillTags": [
+                "cause_effect",
+                "reason",
+                "evidence"
+              ],
+              "questionFormat": "reason_choice",
+              "type": "reason",
+              "question": "蔵のある家の人たちが庭へ出て来たのは、なぜですか。",
+              "choices": [
+                "表の庭が騒々しく、不思議に思ったから",
+                "猿が家の戸を開けたから",
+                "子どもたちに呼ばれたから",
+                "米を買いに行こうとしたから"
+              ],
+              "answerIndex": 0,
+              "explanation": "家の人たちは、表の庭が騒がしいことを不思議に思って出て来ました。",
+              "evidenceText": "蔵のある家の人達は、表の庭が騒々しいので、不思議に思って出て来ました。",
+              "wrongChoiceExplanations": [
+                "正解です。騒々しさが、庭へ出た原因です。",
+                "猿が戸を開けたとは書いてありません。",
+                "子どもたちに呼ばれたとは書いてありません。",
+                "米を買いに行くためではありません。"
+              ],
+              "thinkingSteps": [
+                "家の人が出て来た文を探す",
+                "『ので』の前を読む",
+                "原因と行動をつなげる"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -4320,6 +4484,47 @@
               ],
               "humanReviewStatus": "approved_for_middle_grade_assets",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "aozora_middle_g4_005_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 4,
+              "skillTags": [
+                "cause_effect",
+                "feeling",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "feeling",
+              "question": "クねずみが最初に大きなせきばらいをすると、タねずみはどうなりましたか。",
+              "choices": [
+                "びっくりして飛びあがった",
+                "安心してすぐに帰った",
+                "うれしくなって笑った",
+                "怒って大声を出した"
+              ],
+              "answerIndex": 0,
+              "explanation": "クねずみの大きなせきばらいが原因で、タねずみはびっくりして飛びあがりました。",
+              "evidenceText": "いきなりクねずみが大きなせきばらいをしましたので、タねずみはびっくりして飛びあがりました。",
+              "wrongChoiceExplanations": [
+                "正解です。せきばらいのすぐ後のタねずみの反応です。",
+                "安心するのは、そのあとクねずみが話を続けてからです。",
+                "笑ったとは書いてありません。",
+                "怒って大声を出したとは書いてありません。"
+              ],
+              "thinkingSteps": [
+                "最初のせきばらいの文を探す",
+                "『ので』の前後を分ける",
+                "タねずみの反応を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }

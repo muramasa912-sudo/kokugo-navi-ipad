@@ -3,7 +3,7 @@ import { allQuestionRefs, isAozora, targetGrades } from "./lessonLoader.js";
 import { parentComment, scoreLabel, teacherComment, weakSkillTags } from "./reportCard.js";
 
 export function createBasicTest(lessons, grade) {
-  const refs = buildQuestionRefsForGrade(lessons, grade);
+  const refs = buildQuestionRefsForGrade(lessons, grade, { includeTestOnly: true });
   const seed = createSeed();
   const selected = shuffleWithSeed(refs, stableHash(`test-${grade}`, seed)).slice(0, 10);
   if (selected.length < 10) return null;

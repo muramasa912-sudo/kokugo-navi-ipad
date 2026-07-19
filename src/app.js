@@ -1,4 +1,4 @@
-import { findLesson, findPassage, isAozora, lessonBadges, lessonQuestionCount, loadLessons, targetGrades } from "./lessonLoader.js";
+import { findLesson, findPassage, isAozora, lessonBadges, lessonQuestionCount, loadLessons, practiceQuestions, targetGrades } from "./lessonLoader.js";
 import { createSeed, emptyStudentProgress, filterLessons, learningTreeStage, makeDisplayQuestion, sanitizeStudentName, skillLabel, STUDY_MODES, teacherMessageForQuestion, teacherPraiseForQuestion, updateTreeProgress, withStudentName } from "./quizEngine.js";
 import { answerTestQuestion, createBasicReviewTest, createBasicTest, currentTestQuestion, finishTest } from "./testMode.js";
 import { questionSpeech, speak, stopSpeech, canUseSpeech } from "./speech.js";
@@ -933,7 +933,10 @@ class WebKokugoApp {
   currentLessonPassage() {
     const lesson = findLesson(this.lessons, this.state.lessonId);
     const passage = findPassage(lesson, this.state.passageId) || (lesson?.passages || [])[0] || null;
-    return { lesson, passage };
+    return {
+      lesson,
+      passage: passage ? { ...passage, questions: practiceQuestions(passage) } : null
+    };
   }
 
   currentQuestionContext() {

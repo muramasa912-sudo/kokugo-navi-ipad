@@ -47,14 +47,19 @@ export function isAozora(lesson) {
 }
 
 export function lessonQuestionCount(lesson) {
-  return (lesson.passages || []).reduce((total, passage) => total + (passage.questions || []).length, 0);
+  return (lesson.passages || []).reduce((total, passage) => total + practiceQuestions(passage).length, 0);
 }
 
-export function allQuestionRefs(lessons) {
+export function practiceQuestions(passage) {
+  return (passage?.questions || []).filter((question) => !question.testOnly);
+}
+
+export function allQuestionRefs(lessons, { includeTestOnly = false } = {}) {
   const refs = [];
   for (const lesson of lessons) {
     for (const passage of lesson.passages || []) {
       (passage.questions || []).forEach((question, questionIndex) => {
+        if (question.testOnly && !includeTestOnly) return;
         refs.push({ lesson, passage, question, questionIndex });
       });
     }

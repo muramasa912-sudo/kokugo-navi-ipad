@@ -271,6 +271,47 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "middle_expansion_g3_001_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 3,
+              "skillTags": [
+                "paragraph",
+                "evidence",
+                "cause_effect"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "第三段落で、先生が伝えたことはどれですか。",
+              "choices": [
+                "気温は場所のほかに、風や地面なども関係する",
+                "気温は日なたで一度だけ測ればよい",
+                "温度計は手に持ったまま測る",
+                "記録には場所だけを書けばよい"
+              ],
+              "answerIndex": 0,
+              "explanation": "先生は、場所だけで決めず、風の強さや地面、時刻も関係すると説明しました。",
+              "evidenceText": "風の強さや地面のようす、測った時刻も関係するからです。",
+              "wrongChoiceExplanations": [
+                "正解です。第三段落の先生の説明をまとめています。",
+                "先生は、すぐに決めないように言っています。",
+                "数字が落ち着くまで待って測りました。",
+                "記録には時刻と天気も書きました。"
+              ],
+              "thinkingSteps": [
+                "第三段落の先生の言葉を探す",
+                "いくつの条件が出てくるか確かめる",
+                "段落の中心に合う選択肢を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -542,6 +583,47 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "middle_expansion_g3_002_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 3,
+              "skillTags": [
+                "reason",
+                "cause_effect",
+                "evidence"
+              ],
+              "questionFormat": "reason_choice",
+              "type": "reason",
+              "question": "りくたちが地図のすみに説明を書いたのは、なぜですか。",
+              "choices": [
+                "印だけでは意味が分からなかったから",
+                "道を二度歩きたくなかったから",
+                "一年生が地図をなくしたから",
+                "地図に空いた場所があったから"
+              ],
+              "answerIndex": 0,
+              "explanation": "教室に戻って、印だけでは意味が分からないと気づいたことが、説明を書いた理由です。",
+              "evidenceText": "教室に戻ると、印だけでは意味が分からないことに気づきました。",
+              "wrongChoiceExplanations": [
+                "正解です。印の意味を使う人に伝えるためです。",
+                "見落としを確かめるため、道は二度歩きました。",
+                "一年生が地図をなくしたとは書いてありません。",
+                "空いた場所をうめるためではありません。"
+              ],
+              "thinkingSteps": [
+                "『そこで』の前の文を読む",
+                "困ったことを見つける",
+                "説明を書く理由につなげる"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -814,6 +896,47 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "middle_expansion_g3_003_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 3,
+              "skillTags": [
+                "paragraph",
+                "content",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "一週間後に分かった、新しい問題は何ですか。",
+              "choices": [
+                "大きな紙があまり使われていないこと",
+                "小さな紙が全部なくなったこと",
+                "箱がこわれてしまったこと",
+                "見本が大きすぎたこと"
+              ],
+              "answerIndex": 0,
+              "explanation": "一週間後に紙の量を調べると、大きな紙があまり減っていないことが分かりました。",
+              "evidenceText": "小さな紙はよく使われましたが、大きな紙はあまり減っていません。",
+              "wrongChoiceExplanations": [
+                "正解です。大きな紙の使い道が次の課題になりました。",
+                "小さな紙はよく使われましたが、全部なくなったとは書いてありません。",
+                "箱がこわれたとは書いてありません。",
+                "見本の大きさが問題だとは書いてありません。"
+              ],
+              "thinkingSteps": [
+                "『一週間後』の段落を読む",
+                "小さな紙と大きな紙をくらべる",
+                "残った問題を選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -1086,6 +1209,47 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "middle_expansion_g3_004_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 3,
+              "skillTags": [
+                "reason",
+                "evidence",
+                "cause_effect"
+              ],
+              "questionFormat": "reason_choice",
+              "type": "reason",
+              "question": "二人が当番カードに土のようすと水の量を書いたのは、なぜですか。",
+              "choices": [
+                "次の当番も同じように判断できるようにするため",
+                "先生に水やりをまかせるため",
+                "雨をふらせるため",
+                "トマトの数を数えるため"
+              ],
+              "answerIndex": 0,
+              "explanation": "本文には、次の当番が同じように判断できるようにするためだと書かれています。",
+              "evidenceText": "次の当番が同じように判断できるようにするためです。",
+              "wrongChoiceExplanations": [
+                "正解です。記録を次の当番の判断に役立てます。",
+                "先生にまかせるためではありません。",
+                "カードで雨をふらせることはできません。",
+                "トマトの数を書くためではありません。"
+              ],
+              "thinkingSteps": [
+                "当番カードの文を探す",
+                "次の文にある理由を読む",
+                "記録をだれが使うか考える"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
@@ -1358,6 +1522,47 @@
               ],
               "humanReviewStatus": "approved_original_asset",
               "approvedForProduction": true
+            },
+            {
+              "questionId": "middle_expansion_g3_005_p001_test_q001",
+              "mode": "logical",
+              "difficulty": 3,
+              "skillTags": [
+                "contrast",
+                "content",
+                "evidence"
+              ],
+              "questionFormat": "multiple_choice",
+              "type": "content",
+              "question": "『自分のことばが別の意味に受け取られた』とは、どんなことですか。",
+              "choices": [
+                "教えたい気持ちが、上手でないと言う意味に聞こえた",
+                "ほめた気持ちが、遊びたいという意味に聞こえた",
+                "あやまる言葉が、作品を借りる意味に聞こえた",
+                "質問した言葉が、帰りたいという意味に聞こえた"
+              ],
+              "answerIndex": 0,
+              "explanation": "そうまは教えられるというつもりでしたが、れんは上手にできなかったと言われたように感じました。",
+              "evidenceText": "そうまは、自分のことばが別の意味に受け取られたと知り、『きみならできると思って、作り方を教えたかったんだ。言い方が足りなかったね』と伝えました。",
+              "wrongChoiceExplanations": [
+                "正解です。話した人のつもりと、聞いた人の受け取り方が違いました。",
+                "遊びたいという意味の話ではありません。",
+                "作品を借りる話ではありません。",
+                "帰りたいという話ではありません。"
+              ],
+              "thinkingSteps": [
+                "そうまのつもりを読む",
+                "れんがどう感じたか読む",
+                "二人の受け取り方の違いを選ぶ"
+              ],
+              "qualityFlags": [
+                "test_mode_only",
+                "evidence_ok",
+                "original_grade_appropriate"
+              ],
+              "humanReviewStatus": "approved_original_asset",
+              "approvedForProduction": true,
+              "testOnly": true
             }
           ]
         }
