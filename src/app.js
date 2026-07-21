@@ -2,6 +2,7 @@ import { findLesson, findPassage, isAozora, lessonBadges, lessonQuestionCount, l
 import { createSeed, emptyStudentProgress, filterLessons, learningTreeStage, makeDisplayQuestion, sanitizeStudentName, skillLabel, STUDY_MODES, teacherMessageForQuestion, teacherPraiseForQuestion, updateTreeProgress, withStudentName } from "./quizEngine.js";
 import { answerTestQuestion, createBasicReviewTest, createBasicTest, currentTestQuestion, finishTest } from "./testMode.js";
 import { questionSpeech, speak, stopSpeech, canUseSpeech } from "./speech.js";
+import { graphemeLength, isExactWritingChallengeAnswer, limitWritingAnswer, validWritingChallenges } from "./writingChallenge.js";
 
 const STORAGE_KEYS = {
   history: "kokugo_web_history",
@@ -10,7 +11,8 @@ const STORAGE_KEYS = {
   lastGrade: "kokugo_web_last_grade",
   onboarding: "kokugo_web_onboarding_done",
   studentName: "kokugo_student_name",
-  studentProgress: "kokugo_student_progress"
+  studentProgress: "kokugo_student_progress",
+  writingChallenges: "kokugo_writing_challenge_events"
 };
 
 const DEFAULT_SETTINGS = {
@@ -59,6 +61,10 @@ class WebKokugoApp {
       showOnboarding: localStorage.getItem(STORAGE_KEYS.onboarding) !== "done",
       studentProgress: this.readStudentProgress(),
       treeUpdate: null,
+      writingChallengeId: null,
+      writingAnswer: "",
+      writingResult: null,
+      writingIsComposing: false,
       settings
     };
   }
@@ -79,6 +85,8 @@ class WebKokugoApp {
     if (this.state.screen === "question") return this.layout("問題に答える", this.questionHtml());
     if (this.state.screen === "result") return this.layout("正誤判定", this.resultHtml());
     if (this.state.screen === "explanation") return this.layout("解説", this.explanationHtml());
+    if (this.state.screen === "writingChallengeInvite") return this.layout("記述チャレンジ", this.writingChallengeInviteHtml());
+    if (this.state.screen === "writingChallenge") return this.layout("記述チャレンジ", this.writingChallengeHtml());
     if (this.state.screen === "testGrade") return this.layout(this.state.testKind === "basicReview" ? "基礎復習コース" : "定期テスト対策コース", this.testGradeHtml());
     if (this.state.screen === "testSetup") return this.layout(this.state.testKind === "basicReview" ? "基礎復習コース" : "基本テスト", this.testSetupHtml());
     if (this.state.screen === "testQuestion") return this.layout(this.state.testKind === "basicReview" ? "基礎復習コース" : "定期テスト対策コース", this.testQuestionHtml());
@@ -238,6 +246,7 @@ class WebKokugoApp {
     const { lesson, passage } = this.currentLessonPassage();
     if (!lesson || !passage) return `<section class="panel"><p>教材が見つかりません。</p></section>`;
     const isLowGrade = isLowGradeLesson(lesson);
+    const writingChallenge = this.writingChallengesFor(passage, lesson)[0] || null;
     return `
       <section class="reading-layout">
         <article class="panel passage-panel">
@@ -253,6 +262,7 @@ class WebKokugoApp {
           <h3>学習を始める</h3>
           <p>本文を読んだら、問題に進みましょう。</p>
           <button class="primary-button wide" data-action="startQuestions">問題へ進む</button>
+          ${writingChallenge ? `<button class="ghost-button wide" data-action="openWritingChallenge" data-challenge-id="${escapeAttr(writingChallenge.challengeId)}">記述チャレンジ</button>` : ""}
         </aside>
       </section>
     `;
@@ -381,6 +391,68 @@ class WebKokugoApp {
           </div>
         </article>
         <aside class="panel side-panel">${this.sourceHtml(lesson)}</aside>
+      </section>
+    `;
+  }
+
+  writingChallengeInviteHtml() {
+    const context = this.currentWritingChallengeContext();
+    if (!context) return `<section class="panel"><p>記述チャレンジが見つかりません。</p></section>`;
+    return `
+      <section class="panel writing-challenge-panel">
+        <h2>記述チャレンジに挑戦しますか？</h2>
+        <p>本文から言葉を抜き出して書く、任意のチャレンジです。今回はやめても、成績や連続正解には影響しません。</p>
+        <div class="soft-message">${escapeHtml(context.challenge.question)}</div>
+        <div class="button-row">
+          <button class="primary-button" data-action="startWritingChallenge">挑戦する</button>
+          <button class="ghost-button" data-action="skipWritingChallenge">今回はやめる</button>
+        </div>
+      </section>
+    `;
+  }
+
+  writingChallengeHtml() {
+    const context = this.currentWritingChallengeContext();
+    if (!context) return `<section class="panel"><p>記述チャレンジが見つかりません。</p></section>`;
+    const { lesson, passage, challenge } = context;
+    const length = graphemeLength(this.state.writingAnswer);
+    const exact = this.state.writingResult === "exact_match";
+    const checked = Boolean(this.state.writingResult);
+    return `
+      <section class="study-layout writing-challenge-layout">
+        <article class="panel writing-challenge-panel">
+          <p class="progress-text">記述チャレンジ</p>
+          <h2>${escapeHtml(challenge.question)}</h2>
+          ${this.speechButtons([{ label: "問題を読む", text: `記述チャレンジ。${challenge.question}` }])}
+          <div class="mini-passage">${formatBody(passage.body, passage.rubyBody)}</div>
+          ${!checked ? `
+            <label class="writing-answer-field">
+              <span>本文から抜き出した言葉</span>
+              <textarea rows="3" inputmode="text" enterkeyhint="done" data-action="writingAnswer">${escapeHtml(this.state.writingAnswer)}</textarea>
+              <span class="writing-count" data-writing-count>${length}／${challenge.maxLength}文字</span>
+            </label>
+            <button class="primary-button wide" data-action="checkWritingAnswer" ${!this.state.writingAnswer.trim() || length > challenge.maxLength ? "disabled" : ""}>答えを確かめる</button>
+          ` : exact ? `
+            <div class="writing-result exact" aria-live="polite">
+              <h3>正解です！本文から正しく抜き出せました。</h3>
+              <p><strong>あなたの答え：</strong>${escapeHtml(this.state.writingAnswer)}</p>
+              <p>${escapeHtml(challenge.explanation)}</p>
+            </div>
+            <button class="primary-button wide" data-action="finishWritingChallenge">次へ進む</button>
+          ` : `
+            <div class="writing-result model-check" aria-live="polite">
+              <h3>お手本と比べてみましょう</h3>
+              <p><strong>あなたの答え：</strong>${escapeHtml(this.state.writingAnswer)}</p>
+              <p><strong>お手本の答え：</strong>${escapeHtml(challenge.modelAnswer)}</p>
+              <p>${escapeHtml(challenge.explanation)}</p>
+            </div>
+            <div class="button-row">
+              <button class="primary-button" data-action="retryWritingChallenge">もう一度書く</button>
+              <button class="ghost-button" data-action="finishWritingChallenge">次へ進む</button>
+            </div>
+          `}
+        </article>
+        <aside class="panel side-panel">${this.teacherCard("本文と同じ言葉を、短く正確に抜き出してみましょう。お手本を確かめることも大切な学習です。")}</aside>
       </section>
     `;
   }
@@ -516,6 +588,7 @@ class WebKokugoApp {
   parentReportHtml() {
     const history = readArray(STORAGE_KEYS.history);
     const tests = readArray(STORAGE_KEYS.tests);
+    const writingEvents = readArray(STORAGE_KEYS.writingChallenges);
     const correctCount = history.filter((item) => item.correct).length;
     const accuracy = history.length ? Math.round((correctCount * 100) / history.length) : 0;
     const rereadCount = history.filter((item) => item.usedReread).length + tests.reduce(
@@ -531,6 +604,11 @@ class WebKokugoApp {
     const recommendation = recommendationForRate(accuracy, rereadCount);
     const safeName = sanitizeStudentName(this.state.settings.studentName);
     const namedSubject = safeName ? `${safeName}さんは、` : "";
+    const writingAttempted = new Set(writingEvents.filter((item) => ["exact_match", "model_check"].includes(item.eventType)).map((item) => item.challengeId)).size;
+    const writingExact = new Set(writingEvents.filter((item) => item.eventType === "exact_match").map((item) => item.challengeId)).size;
+    const writingModelChecks = new Set(writingEvents.filter((item) => item.eventType === "model_check").map((item) => item.challengeId)).size;
+    const writingRetries = writingEvents.filter((item) => item.eventType === "retry").length;
+    const writingSkips = writingEvents.filter((item) => item.eventType === "skipped").length;
     const effort = rereadCount > 0
       ? "答えを急がず、本文に戻って確認しようとした姿勢が見られました。"
       : retryCount > 0
@@ -558,6 +636,16 @@ class WebKokugoApp {
           <article class="report-summary-card"><h3>得意な力</h3><p>${escapeHtml(strongSkill ? skillLabel(strongSkill.tag) : "まだ判定前です")}</p></article>
           <article class="report-summary-card"><h3>次に練習したい力</h3><p>${escapeHtml(weakSkill ? skillLabel(weakSkill.tag) : "まだ判定前です")}</p></article>
         </div>
+      </section>
+      <section class="panel writing-report-panel">
+        <h2>記述チャレンジ</h2>
+        <div class="report-card-grid compact-report-grid">
+          <article class="report-summary-card"><h3>挑戦した問題</h3><p>${writingAttempted}問</p></article>
+          <article class="report-summary-card"><h3>本文から正しく抜き出せた問題</h3><p>${writingExact}問</p></article>
+          <article class="report-summary-card"><h3>お手本を確認した問題</h3><p>${writingModelChecks}問</p></article>
+          <article class="report-summary-card"><h3>学び直し</h3><p>もう一度書いた回数 ${writingRetries}回<br>今回はやめた回数 ${writingSkips}回</p></article>
+        </div>
+        <p class="small-note">記述チャレンジは通常問題の正答率とは分けて記録しています。お手本と比べた経験も大切な学習です。</p>
       </section>
     `;
   }
@@ -732,17 +820,42 @@ class WebKokugoApp {
   bind() {
     this.root.querySelectorAll("[data-action]").forEach((element) => {
       const action = element.dataset.action;
-      const eventName = action === "onboardingName" || action === "settingStudentName"
+      const eventName = action === "onboardingName" || action === "settingStudentName" || action === "writingAnswer"
         ? "input"
         : ["settingTeacher", "settingCelebration", "settingSpeech", "settingRate"].includes(action) ? "change" : "click";
       element.addEventListener(eventName, (event) => this.handleAction(action, element, event));
     });
+    const writingField = this.root.querySelector('[data-action="writingAnswer"]');
+    if (writingField) {
+      writingField.addEventListener("compositionstart", () => { this.state.writingIsComposing = true; });
+      writingField.addEventListener("compositionend", () => {
+        this.state.writingIsComposing = false;
+        const context = this.currentWritingChallengeContext();
+        const maxLength = context?.challenge?.maxLength || 20;
+        this.state.writingAnswer = limitWritingAnswer(writingField.value, maxLength);
+        writingField.value = this.state.writingAnswer;
+        this.updateWritingCounter(maxLength);
+      });
+      writingField.addEventListener("focus", () => {
+        window.setTimeout(() => writingField.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
+      });
+    }
   }
 
   handleAction(action, element, event) {
     event.preventDefault();
     if (action === "onboardingName") {
       this.state.onboardingNameDraft = sanitizeStudentName(element.value);
+      return;
+    }
+    if (action === "writingAnswer") {
+      const context = this.currentWritingChallengeContext();
+      const maxLength = context?.challenge?.maxLength || 20;
+      const composing = Boolean(event?.isComposing || this.state.writingIsComposing);
+      const value = composing ? element.value : limitWritingAnswer(element.value, maxLength);
+      this.state.writingAnswer = value;
+      if (!composing && element.value !== value) element.value = value;
+      this.updateWritingCounter(maxLength);
       return;
     }
     if (action === "onboardingNext") return this.navigate({ onboardingPage: Math.min(3, this.state.onboardingPage + 1) });
@@ -778,6 +891,18 @@ class WebKokugoApp {
     }
     if (action === "lesson") return this.navigate({ screen: "passage", lessonId: element.dataset.lessonId, passageId: element.dataset.passageId, questionIndex: 0 });
     if (action === "startQuestions") return this.navigate({ screen: "question", questionIndex: 0, selectedIndex: null, correct: null, retryMode: false, usedReread: false, usedSpeech: false, showPassageAgain: false, sessionSeed: createSeed() });
+    if (action === "openWritingChallenge") return this.navigate({ screen: "writingChallengeInvite", writingChallengeId: element.dataset.challengeId, writingAnswer: "", writingResult: null });
+    if (action === "startWritingChallenge") return this.navigate({ screen: "writingChallenge", writingAnswer: "", writingResult: null });
+    if (action === "skipWritingChallenge") {
+      this.saveWritingChallengeEvent("skipped", "");
+      return this.navigate({ screen: "passage", writingAnswer: "", writingResult: null });
+    }
+    if (action === "checkWritingAnswer") return this.checkWritingAnswer();
+    if (action === "retryWritingChallenge") {
+      this.saveWritingChallengeEvent("retry", this.state.writingAnswer);
+      return this.navigate({ screen: "writingChallenge", writingAnswer: "", writingResult: null });
+    }
+    if (action === "finishWritingChallenge") return this.navigate({ screen: "passage", writingAnswer: "", writingResult: null });
     if (action === "togglePassage") {
       const opening = !this.state.showPassageAgain;
       return this.navigate({ showPassageAgain: opening, usedReread: this.state.usedReread || opening });
@@ -835,6 +960,8 @@ class WebKokugoApp {
       question: "passage",
       result: "question",
       explanation: "question",
+      writingChallengeInvite: "passage",
+      writingChallenge: "writingChallengeInvite",
       testGrade: "home",
       testSetup: "testGrade",
       testQuestion: "testSetup",
@@ -892,8 +1019,67 @@ class WebKokugoApp {
     if (nextIndex < context.passage.questions.length) {
       this.navigate({ screen: "question", questionIndex: nextIndex, selectedIndex: null, correct: null, retryMode: false, usedReread: false, usedSpeech: false, showPassageAgain: false, resultPraise: null, treeUpdate: null });
     } else {
-      this.navigate({ screen: "passage", selectedIndex: null, correct: null, retryMode: false, usedReread: false, usedSpeech: false, showPassageAgain: false, resultPraise: null, treeUpdate: null });
+      const writingChallenge = this.writingChallengesFor(context.passage, context.lesson)[0] || null;
+      this.navigate({
+        screen: writingChallenge ? "writingChallengeInvite" : "passage",
+        writingChallengeId: writingChallenge?.challengeId || null,
+        writingAnswer: "",
+        writingResult: null,
+        selectedIndex: null,
+        correct: null,
+        retryMode: false,
+        usedReread: false,
+        usedSpeech: false,
+        showPassageAgain: false,
+        resultPraise: null,
+        treeUpdate: null
+      });
     }
+  }
+
+  writingChallengesFor(passage, lesson) {
+    return validWritingChallenges(passage, this.state.grade, targetGrades(lesson));
+  }
+
+  currentWritingChallengeContext() {
+    const { lesson, passage } = this.currentLessonPassage();
+    if (!lesson || !passage) return null;
+    const challenges = this.writingChallengesFor(passage, lesson);
+    const challenge = challenges.find((item) => item.challengeId === this.state.writingChallengeId) || challenges[0] || null;
+    return challenge ? { lesson, passage, challenge } : null;
+  }
+
+  checkWritingAnswer() {
+    const context = this.currentWritingChallengeContext();
+    if (!context || !this.state.writingAnswer.trim()) return;
+    const answer = limitWritingAnswer(this.state.writingAnswer, context.challenge.maxLength);
+    const result = isExactWritingChallengeAnswer(answer, context.challenge) ? "exact_match" : "model_check";
+    this.state.writingAnswer = answer;
+    this.saveWritingChallengeEvent(result, answer);
+    this.navigate({ screen: "writingChallenge", writingResult: result });
+  }
+
+  updateWritingCounter(maxLength) {
+    const counter = this.root.querySelector("[data-writing-count]");
+    if (counter) counter.textContent = `${graphemeLength(this.state.writingAnswer)}／${maxLength}文字`;
+    const button = this.root.querySelector('[data-action="checkWritingAnswer"]');
+    if (button) button.disabled = !this.state.writingAnswer.trim() || graphemeLength(this.state.writingAnswer) > maxLength;
+  }
+
+  saveWritingChallengeEvent(eventType, answer) {
+    const context = this.currentWritingChallengeContext();
+    if (!context) return;
+    const events = readArray(STORAGE_KEYS.writingChallenges);
+    events.push({
+      challengeId: context.challenge.challengeId,
+      lessonId: context.lesson.lessonId,
+      passageId: context.passage.passageId,
+      grade: this.state.grade,
+      eventType,
+      answer: String(answer || ""),
+      recordedAt: Date.now()
+    });
+    localStorage.setItem(STORAGE_KEYS.writingChallenges, JSON.stringify(events.slice(-500)));
   }
 
   startTest() {

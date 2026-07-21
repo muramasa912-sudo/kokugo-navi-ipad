@@ -1,4 +1,4 @@
-const CACHE_NAME = "kokugo-navi-ipad-v17";
+const CACHE_NAME = "kokugo-navi-ipad-v18";
 
 const CACHE_FILES = [
   "./",
@@ -12,6 +12,7 @@ const CACHE_FILES = [
   "./src/testMode.js",
   "./src/reportCard.js",
   "./src/speech.js",
+  "./src/writingChallenge.js",
   "./src/styles.css",
   "./assets/lessons/kokugo_sample_lessons.json",
   "./assets/lessons/kokugo_lower_grade_expansion_lessons.json",

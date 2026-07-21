@@ -790,6 +790,63 @@ ruby rt {
   font: inherit;
 }
 
+.writing-challenge-panel {
+  max-width: 880px;
+  margin-inline: auto;
+}
+
+.writing-answer-field {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  font-weight: 700;
+}
+
+.writing-answer-field textarea {
+  width: 100%;
+  min-height: 112px;
+  resize: vertical;
+  padding: 14px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  scroll-margin-bottom: 42vh;
+}
+
+.writing-answer-field textarea:focus {
+  border-color: var(--accent);
+  outline: 3px solid var(--accent-soft);
+}
+
+.writing-count {
+  justify-self: end;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.writing-result {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+
+.writing-result.model-check {
+  background: var(--warm-soft);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 @media (max-width: 760px) {
   body {
     font-size: 17px;
@@ -834,5 +891,9 @@ ruby rt {
   .recommend-grid,
   .report-card-grid {
     grid-template-columns: 1fr;
+  }
+
+  .writing-answer-field textarea {
+    min-height: 132px;
   }
 }

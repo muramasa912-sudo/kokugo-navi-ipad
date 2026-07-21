@@ -1884,6 +1884,23 @@
               "ruby": "あん"
             }
           ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g4_001",
+              "type": "challengeExtract",
+              "question": "係がごみの原因を知るためにしたことを、本文から10文字以内で抜き出しましょう。",
+              "maxLength": 10,
+              "acceptedAnswers": [
+                "みんなで観察",
+                "みんなで観察すると"
+              ],
+              "modelAnswer": "みんなで観察",
+              "explanation": "『みんなで観察すると』の部分から、原因を確かめるために観察したことが分かります。",
+              "optional": true,
+              "targetGrades": [4],
+              "inputMode": "text"
+            }
+          ],
           "questions": [
             {
               "questionId": "g4_001_q001",
@@ -2089,6 +2106,22 @@
             {
               "text": "見学",
               "ruby": "けんがく"
+            }
+          ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g4_002",
+              "type": "challengeExtract",
+              "question": "次の見学でリョウがしたことを、本文から15文字以内で抜き出しましょう。",
+              "maxLength": 15,
+              "acceptedAnswers": [
+                "メモを取ってから歩き始めました"
+              ],
+              "modelAnswer": "メモを取ってから歩き始めました",
+              "explanation": "大切な話を聞きのがさないために、リョウが行動を変えた部分です。",
+              "optional": true,
+              "targetGrades": [4],
+              "inputMode": "text"
             }
           ],
           "questions": [
@@ -2298,6 +2331,22 @@
               "ruby": "あいて"
             }
           ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g4_003",
+              "type": "challengeExtract",
+              "question": "おばあさんが待っていたものを、本文から10文字以内で抜き出しましょう。",
+              "maxLength": 10,
+              "acceptedAnswers": [
+                "孫からの手紙"
+              ],
+              "modelAnswer": "孫からの手紙",
+              "explanation": "おばあさんが毎週ベンチで待っていた理由につながる言葉です。",
+              "optional": true,
+              "targetGrades": [4],
+              "inputMode": "text"
+            }
+          ],
           "questions": [
             {
               "questionId": "g4_003_q001",
@@ -2499,6 +2548,23 @@
             {
               "text": "正確",
               "ruby": "せいかく"
+            }
+          ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g5_001",
+              "type": "challengeExtract",
+              "question": "先輩が教えた読むときの心がまえを、本文から15文字以内で抜き出しましょう。",
+              "maxLength": 15,
+              "acceptedAnswers": [
+                "大事なことを届けるつもりで",
+                "大事なことを届けるつもりで読む"
+              ],
+              "modelAnswer": "大事なことを届けるつもりで",
+              "explanation": "聞く人を思い浮かべて読むことが、声の届け方を変えると先輩は伝えています。",
+              "optional": true,
+              "targetGrades": [5],
+              "inputMode": "text"
             }
           ],
           "questions": [
@@ -2704,6 +2770,22 @@
               "ruby": "けっか"
             }
           ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g5_002",
+              "type": "challengeExtract",
+              "question": "祖父が結果よりも大切にしていたものを、本文から10文字以内で抜き出しましょう。",
+              "maxLength": 10,
+              "acceptedAnswers": [
+                "忘れたくない時間"
+              ],
+              "modelAnswer": "忘れたくない時間",
+              "explanation": "勝ち負けではなく、友と走った時間を祖父が大切にしていたことが分かります。",
+              "optional": true,
+              "targetGrades": [5],
+              "inputMode": "text"
+            }
+          ],
           "questions": [
             {
               "questionId": "g5_002_q001",
@@ -2905,6 +2987,22 @@
             {
               "text": "景色",
               "ruby": "けしき"
+            }
+          ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g5_003",
+              "type": "challengeExtract",
+              "question": "マナの言葉を聞いた駅員の様子を、本文から15文字以内で抜き出しましょう。",
+              "maxLength": 15,
+              "acceptedAnswers": [
+                "少し驚いてから笑いました"
+              ],
+              "modelAnswer": "少し驚いてから笑いました",
+              "explanation": "『ありがとうございます』という言葉を受け取った駅員の表情の変化です。",
+              "optional": true,
+              "targetGrades": [5],
+              "inputMode": "text"
             }
           ],
           "questions": [
@@ -3110,6 +3208,22 @@
               "ruby": "だいち"
             }
           ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g6_001",
+              "type": "challengeExtract",
+              "question": "大地が仕事だと気づいたことを、本文から15文字以内で抜き出しましょう。",
+              "maxLength": 15,
+              "acceptedAnswers": [
+                "次に使う人のために整えること"
+              ],
+              "modelAnswer": "次に使う人のために整えること",
+              "explanation": "自分たちのためだけでなく、次に使う人を考えた大地の気づきです。",
+              "optional": true,
+              "targetGrades": [6],
+              "inputMode": "text"
+            }
+          ],
           "questions": [
             {
               "questionId": "g6_001_q001",
@@ -3313,6 +3427,22 @@
               "ruby": "あんぜん"
             }
           ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g6_002",
+              "type": "challengeExtract",
+              "question": "安全を支える仕事にあるとミカが考えたものを、本文から10文字以内で抜き出しましょう。",
+              "maxLength": 10,
+              "acceptedAnswers": [
+                "見えない強さ"
+              ],
+              "modelAnswer": "見えない強さ",
+              "explanation": "見返りを求めずに光り続ける灯台の働きを表した言葉です。",
+              "optional": true,
+              "targetGrades": [6],
+              "inputMode": "text"
+            }
+          ],
           "questions": [
             {
               "questionId": "g6_002_q001",
@@ -3514,6 +3644,23 @@
             {
               "text": "出来事",
               "ruby": "できごと"
+            }
+          ],
+          "writingChallenges": [
+            {
+              "challengeId": "writing_g6_003",
+              "type": "challengeExtract",
+              "question": "小さな助けがレンにしていたことを、本文から15文字以内で抜き出しましょう。",
+              "maxLength": 15,
+              "acceptedAnswers": [
+                "自分を支えていた",
+                "小さな助けも自分を支えていた"
+              ],
+              "modelAnswer": "自分を支えていた",
+              "explanation": "日々の小さな助けも、自分を支える大切な力だったとレンは気づきました。",
+              "optional": true,
+              "targetGrades": [6],
+              "inputMode": "text"
             }
           ],
           "questions": [
