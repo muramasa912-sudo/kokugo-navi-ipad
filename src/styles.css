@@ -802,7 +802,8 @@ ruby rt {
   font-weight: 700;
 }
 
-.writing-answer-field textarea {
+.writing-answer-field textarea,
+.writing-answer-field input {
   width: 100%;
   min-height: 112px;
   resize: vertical;
@@ -817,7 +818,8 @@ ruby rt {
   scroll-margin-bottom: 42vh;
 }
 
-.writing-answer-field textarea:focus {
+.writing-answer-field textarea:focus,
+.writing-answer-field input:focus {
   border-color: var(--accent);
   outline: 3px solid var(--accent-soft);
 }

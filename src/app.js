@@ -2,7 +2,7 @@ import { findLesson, findPassage, isAozora, lessonBadges, lessonQuestionCount, l
 import { createSeed, emptyStudentProgress, filterLessons, learningTreeStage, makeDisplayQuestion, sanitizeStudentName, skillLabel, STUDY_MODES, teacherMessageForQuestion, teacherPraiseForQuestion, updateTreeProgress, withStudentName } from "./quizEngine.js";
 import { answerTestQuestion, createBasicReviewTest, createBasicTest, currentTestQuestion, finishTest } from "./testMode.js";
 import { questionSpeech, speak, stopSpeech, canUseSpeech } from "./speech.js";
-import { graphemeLength, isExactWritingChallengeAnswer, limitWritingAnswer, validWritingChallenges } from "./writingChallenge.js";
+import { canonicalWritingType, effectiveModelAnswers, evaluateWritingAnswer, graphemeLength, limitWritingAnswer, validWritingChallenges, writingTypeLabel } from "./writingChallenge.js";
 
 const STORAGE_KEYS = {
   history: "kokugo_web_history",
@@ -12,7 +12,8 @@ const STORAGE_KEYS = {
   onboarding: "kokugo_web_onboarding_done",
   studentName: "kokugo_student_name",
   studentProgress: "kokugo_student_progress",
-  writingChallenges: "kokugo_writing_challenge_events"
+  writingChallenges: "kokugo_writing_challenge_events",
+  writingDrafts: "kokugo_writing_challenge_drafts"
 };
 
 const DEFAULT_SETTINGS = {
@@ -64,6 +65,10 @@ class WebKokugoApp {
       writingChallengeId: null,
       writingAnswer: "",
       writingResult: null,
+      writingEvaluation: null,
+      writingHintLevel: 0,
+      writingShowPassage: false,
+      writingReturnScreen: "passage",
       writingIsComposing: false,
       settings
     };
@@ -85,6 +90,8 @@ class WebKokugoApp {
     if (this.state.screen === "question") return this.layout("問題に答える", this.questionHtml());
     if (this.state.screen === "result") return this.layout("正誤判定", this.resultHtml());
     if (this.state.screen === "explanation") return this.layout("解説", this.explanationHtml());
+    if (this.state.screen === "writingGrade") return this.layout("記述トレーニング", this.writingGradeHtml());
+    if (this.state.screen === "writingList") return this.layout(`小学${this.state.grade}年の記述トレーニング`, this.writingListHtml());
     if (this.state.screen === "writingChallengeInvite") return this.layout("記述チャレンジ", this.writingChallengeInviteHtml());
     if (this.state.screen === "writingChallenge") return this.layout("記述チャレンジ", this.writingChallengeHtml());
     if (this.state.screen === "testGrade") return this.layout(this.state.testKind === "basicReview" ? "基礎復習コース" : "定期テスト対策コース", this.testGradeHtml());
@@ -153,6 +160,10 @@ class WebKokugoApp {
         <button class="mode-card" data-action="mode" data-mode="logical">
           <strong>${escapeHtml(STUDY_MODES.logical.title)}</strong>
           <span>${escapeHtml(STUDY_MODES.logical.description)}</span>
+        </button>
+        <button class="mode-card gentle" data-action="writingTraining">
+          <strong>記述トレーニング</strong>
+          <span>小4〜小6向け。抜き出し・短文説明・自分の考えを書く任意の練習です。</span>
         </button>
         <button class="mode-card" data-action="mode" data-mode="library">
           <strong>${escapeHtml(STUDY_MODES.library.title)}</strong>
@@ -234,7 +245,7 @@ class WebKokugoApp {
             <button class="lesson-card" data-action="lesson" data-lesson-id="${escapeAttr(lesson.lessonId)}" data-passage-id="${escapeAttr((lesson.passages || [])[0]?.passageId || "")}">
               <span class="lesson-title">${escapeHtml(lesson.title)}</span>
               <span class="lesson-meta">${escapeHtml(lesson.author || "オリジナル教材")} / ${lessonQuestionCount(lesson)}問</span>
-              <span class="badge-row">${lessonBadges(lesson).map((badge) => `<span class="badge">${escapeHtml(badge)}</span>`).join("")}</span>
+              <span class="badge-row">${lessonBadges(lesson).map((badge) => `<span class="badge">${escapeHtml(badge)}</span>`).join("")}${(lesson.passages || []).some((passage) => this.writingChallengesFor(passage, lesson).length) ? '<span class="badge">記述問題あり</span>' : ""}</span>
             </button>
           `).join("")}
         </div>` : `<p>この条件の教材はまだありません。</p>`}
@@ -395,13 +406,58 @@ class WebKokugoApp {
     `;
   }
 
+  writingEntriesForGrade(grade) {
+    const entries = [];
+    for (const lesson of this.lessons) {
+      for (const passage of lesson.passages || []) {
+        for (const challenge of validWritingChallenges(passage, grade, targetGrades(lesson))) {
+          entries.push({ lesson, passage, challenge });
+        }
+      }
+    }
+    return entries.sort((a, b) => a.lesson.title.localeCompare(b.lesson.title, "ja") || a.challenge.challengeId.localeCompare(b.challenge.challengeId));
+  }
+
+  writingGradeHtml() {
+    return `
+      <section class="panel writing-challenge-panel">
+        <h2>記述トレーニング</h2>
+        <p>本文を根拠に、抜き出し・短文説明・自分の考えを書く練習です。通常問題の成績には影響しません。</p>
+        <div class="grade-grid">
+          ${[4, 5, 6].map((grade) => `<button class="primary-button" data-action="writingGrade" data-grade="${grade}">小学${grade}年<br>${this.writingEntriesForGrade(grade).length}問</button>`).join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  writingListHtml() {
+    const entries = this.writingEntriesForGrade(this.state.grade);
+    const events = readArray(STORAGE_KEYS.writingChallenges);
+    return `
+      <section class="panel writing-challenge-panel">
+        <p>問題の種類と挑戦記録を確認して選べます。</p>
+        <div class="lesson-list">
+          ${entries.map(({ lesson, passage, challenge }) => {
+            const attempted = events.some((event) => event.challengeId === challenge.challengeId && !["skipped", "hint", "retry"].includes(event.eventType));
+            return `<button class="lesson-card" data-action="writingItem" data-lesson-id="${escapeAttr(lesson.lessonId)}" data-passage-id="${escapeAttr(passage.passageId)}" data-challenge-id="${escapeAttr(challenge.challengeId)}">
+              <span class="lesson-title">${escapeHtml(lesson.title)}</span>
+              <span class="badge-row"><span class="badge">${escapeHtml(writingTypeLabel(challenge))}</span>${attempted ? '<span class="badge">挑戦済み</span>' : ""}</span>
+              <span>${escapeHtml(challenge.question)}</span>
+              <span class="lesson-meta">${challenge.maxLength}文字以内</span>
+            </button>`;
+          }).join("")}
+        </div>
+      </section>
+    `;
+  }
+
   writingChallengeInviteHtml() {
     const context = this.currentWritingChallengeContext();
     if (!context) return `<section class="panel"><p>記述チャレンジが見つかりません。</p></section>`;
     return `
       <section class="panel writing-challenge-panel">
         <h2>記述チャレンジに挑戦しますか？</h2>
-        <p>本文から言葉を抜き出して書く、任意のチャレンジです。今回はやめても、成績や連続正解には影響しません。</p>
+        <p>${escapeHtml(writingTypeLabel(context.challenge))}の任意チャレンジです。今回はやめても、成績や連続正解には影響しません。</p>
         <div class="soft-message">${escapeHtml(context.challenge.question)}</div>
         <div class="button-row">
           <button class="primary-button" data-action="startWritingChallenge">挑戦する</button>
@@ -416,34 +472,47 @@ class WebKokugoApp {
     if (!context) return `<section class="panel"><p>記述チャレンジが見つかりません。</p></section>`;
     const { lesson, passage, challenge } = context;
     const length = graphemeLength(this.state.writingAnswer);
-    const exact = this.state.writingResult === "exact_match";
-    const checked = Boolean(this.state.writingResult);
+    const evaluation = this.state.writingEvaluation;
+    const checked = Boolean(evaluation);
+    const type = canonicalWritingType(challenge);
+    const modelAnswer = effectiveModelAnswers(challenge)[0] || "";
+    const isSingleLine = type === "extract";
+    const speechActions = [{ label: "問題を読む", text: `記述チャレンジ。${challenge.question}` }];
+    if (this.state.writingAnswer) speechActions.push({ label: "答えを読む", text: `あなたの答え。${this.state.writingAnswer}` });
+    if (checked) {
+      speechActions.push({ label: "お手本を読む", text: `お手本例。${modelAnswer}` });
+      speechActions.push({ label: "解説を読む", text: challenge.explanation });
+    }
     return `
       <section class="study-layout writing-challenge-layout">
         <article class="panel writing-challenge-panel">
-          <p class="progress-text">記述チャレンジ</p>
+          <p class="progress-text">記述チャレンジ / ${escapeHtml(writingTypeLabel(challenge))}</p>
           <h2>${escapeHtml(challenge.question)}</h2>
-          ${this.speechButtons([{ label: "問題を読む", text: `記述チャレンジ。${challenge.question}` }])}
-          <div class="mini-passage">${formatBody(passage.body, passage.rubyBody)}</div>
+          ${this.speechButtons(speechActions)}
+          <button class="ghost-button wide" data-action="toggleWritingPassage">${this.state.writingShowPassage ? "本文を閉じる" : "本文を読み直す"}</button>
+          ${this.state.writingShowPassage ? `<div class="mini-passage">${formatBody(passage.body, passage.rubyBody)}</div>` : ""}
           ${!checked ? `
+            ${(challenge.hints || []).slice(0, this.state.writingHintLevel).map((hint, index) => `<div class="soft-message">ヒント${index + 1}：${escapeHtml(hint)}</div>`).join("")}
+            ${(challenge.hints || []).length ? `<button class="ghost-button wide" data-action="writingHint" ${this.state.writingHintLevel >= challenge.hints.length ? "disabled" : ""}>${this.state.writingHintLevel ? "次のヒント" : "ヒント"}</button>` : ""}
             <label class="writing-answer-field">
-              <span>本文から抜き出した言葉</span>
-              <textarea rows="3" inputmode="text" enterkeyhint="done" data-action="writingAnswer">${escapeHtml(this.state.writingAnswer)}</textarea>
+              <span>${type === "extract" ? "本文から抜き出した言葉" : "あなたの答え"}</span>
+              ${isSingleLine
+                ? `<input type="text" inputmode="text" enterkeyhint="done" data-action="writingAnswer" value="${escapeAttr(this.state.writingAnswer)}">`
+                : `<textarea rows="5" inputmode="text" enterkeyhint="enter" data-action="writingAnswer">${escapeHtml(this.state.writingAnswer)}</textarea>`}
               <span class="writing-count" data-writing-count>${length}／${challenge.maxLength}文字</span>
             </label>
             <button class="primary-button wide" data-action="checkWritingAnswer" ${!this.state.writingAnswer.trim() || length > challenge.maxLength ? "disabled" : ""}>答えを確かめる</button>
-          ` : exact ? `
-            <div class="writing-result exact" aria-live="polite">
-              <h3>正解です！本文から正しく抜き出せました。</h3>
-              <p><strong>あなたの答え：</strong>${escapeHtml(this.state.writingAnswer)}</p>
-              <p>${escapeHtml(challenge.explanation)}</p>
-            </div>
-            <button class="primary-button wide" data-action="finishWritingChallenge">次へ進む</button>
+            <button class="ghost-button wide" data-action="skipWritingChallenge">今回はやめる</button>
           ` : `
-            <div class="writing-result model-check" aria-live="polite">
-              <h3>お手本と比べてみましょう</h3>
+            <div class="writing-result ${evaluation.resultType === "exact_match" ? "exact" : "model-check"}" aria-live="polite">
+              <h3>${escapeHtml(evaluation.title)}</h3>
               <p><strong>あなたの答え：</strong>${escapeHtml(this.state.writingAnswer)}</p>
-              <p><strong>お手本の答え：</strong>${escapeHtml(challenge.modelAnswer)}</p>
+              ${type !== "extract" ? "<p><strong>自動判定は学習の目安です。</strong></p>" : ""}
+              ${(challenge.criteria || []).length ? `<h4>評価観点</h4>${challenge.criteria.map((criterion) => `<p>${evaluation.metCriteria.includes(criterion.label) ? "✓" : "□"} ${escapeHtml(criterion.label)}</p>`).join("")}` : ""}
+              ${(challenge.selfChecks || []).length ? `<h4>自分で確かめよう</h4>${challenge.selfChecks.map((item) => `<p>□ ${escapeHtml(item)}</p>`).join("")}` : ""}
+              <p><strong>お手本例：</strong>${escapeHtml(modelAnswer)}</p>
+              ${type !== "extract" ? "<p>お手本は唯一の正解ではありません。</p>" : ""}
+              ${challenge.evidence ? `<p><strong>本文中の根拠：</strong>${escapeHtml(challenge.evidence)}</p>` : ""}
               <p>${escapeHtml(challenge.explanation)}</p>
             </div>
             <div class="button-row">
@@ -452,7 +521,7 @@ class WebKokugoApp {
             </div>
           `}
         </article>
-        <aside class="panel side-panel">${this.teacherCard("本文と同じ言葉を、短く正確に抜き出してみましょう。お手本を確かめることも大切な学習です。")}</aside>
+        <aside class="panel side-panel">${this.teacherCard("本文に戻って根拠を確かめ、自分の言葉で書こうとしたことが大切です。お手本と比べることも学習になります。")}</aside>
       </section>
     `;
   }
@@ -604,9 +673,12 @@ class WebKokugoApp {
     const recommendation = recommendationForRate(accuracy, rereadCount);
     const safeName = sanitizeStudentName(this.state.settings.studentName);
     const namedSubject = safeName ? `${safeName}さんは、` : "";
-    const writingAttempted = new Set(writingEvents.filter((item) => ["exact_match", "model_check"].includes(item.eventType)).map((item) => item.challengeId)).size;
+    const writingAttempted = new Set(writingEvents.filter((item) => ["exact_match", "model_check", "criteria_complete", "criteria_partial", "opinion_written", "opinion_short"].includes(item.eventType)).map((item) => item.challengeId)).size;
     const writingExact = new Set(writingEvents.filter((item) => item.eventType === "exact_match").map((item) => item.challengeId)).size;
-    const writingModelChecks = new Set(writingEvents.filter((item) => item.eventType === "model_check").map((item) => item.challengeId)).size;
+    const writingModelChecks = new Set(writingEvents.filter((item) => ["model_check", "criteria_partial", "opinion_short"].includes(item.eventType)).map((item) => item.challengeId)).size;
+    const writingReasonComplete = new Set(writingEvents.filter((item) => item.eventType === "criteria_complete").map((item) => item.challengeId)).size;
+    const writingOpinions = new Set(writingEvents.filter((item) => item.eventType === "opinion_written").map((item) => item.challengeId)).size;
+    const writingHints = writingEvents.filter((item) => item.eventType === "hint").length;
     const writingRetries = writingEvents.filter((item) => item.eventType === "retry").length;
     const writingSkips = writingEvents.filter((item) => item.eventType === "skipped").length;
     const effort = rereadCount > 0
@@ -642,10 +714,13 @@ class WebKokugoApp {
         <div class="report-card-grid compact-report-grid">
           <article class="report-summary-card"><h3>挑戦した問題</h3><p>${writingAttempted}問</p></article>
           <article class="report-summary-card"><h3>本文から正しく抜き出せた問題</h3><p>${writingExact}問</p></article>
+          <article class="report-summary-card"><h3>理由を二つの観点で説明できた問題</h3><p>${writingReasonComplete}問</p></article>
+          <article class="report-summary-card"><h3>自分の考えを書いた問題</h3><p>${writingOpinions}問</p></article>
           <article class="report-summary-card"><h3>お手本を確認した問題</h3><p>${writingModelChecks}問</p></article>
-          <article class="report-summary-card"><h3>学び直し</h3><p>もう一度書いた回数 ${writingRetries}回<br>今回はやめた回数 ${writingSkips}回</p></article>
+          <article class="report-summary-card"><h3>学び直し</h3><p>ヒント使用 ${writingHints}回<br>もう一度書いた回数 ${writingRetries}回<br>今回はやめた回数 ${writingSkips}回</p></article>
         </div>
-        <p class="small-note">記述チャレンジは通常問題の正答率とは分けて記録しています。お手本と比べた経験も大切な学習です。</p>
+        <p class="small-note">記述チャレンジは通常問題の正答率とは分けて記録しています。短文説明の自動判定は学習上の目安で、意見問題に一つだけの正解はありません。</p>
+        <button class="ghost-button" data-action="clearWritingHistory">記述の回答履歴を削除</button>
       </section>
     `;
   }
@@ -834,10 +909,15 @@ class WebKokugoApp {
         const maxLength = context?.challenge?.maxLength || 20;
         this.state.writingAnswer = limitWritingAnswer(writingField.value, maxLength);
         writingField.value = this.state.writingAnswer;
+        this.saveWritingDraft(context?.challenge?.challengeId, this.state.writingAnswer);
         this.updateWritingCounter(maxLength);
       });
       writingField.addEventListener("focus", () => {
         window.setTimeout(() => writingField.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
+      });
+      writingField.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && (event.isComposing || this.state.writingIsComposing)) return;
+        if (event.key === "Enter" && writingField.tagName === "INPUT") event.preventDefault();
       });
     }
   }
@@ -855,6 +935,7 @@ class WebKokugoApp {
       const value = composing ? element.value : limitWritingAnswer(element.value, maxLength);
       this.state.writingAnswer = value;
       if (!composing && element.value !== value) element.value = value;
+      if (!composing) this.saveWritingDraft(context?.challenge?.challengeId, value);
       this.updateWritingCounter(maxLength);
       return;
     }
@@ -873,6 +954,32 @@ class WebKokugoApp {
     if (action === "back") return this.goBack();
     if (action === "settings") return this.navigate({ screen: "settings" });
     if (action === "parentReport") return this.navigate({ screen: "parentReport" });
+    if (action === "clearWritingHistory") {
+      if (window.confirm("記述チャレンジの回答履歴と下書きを削除します。よろしいですか？")) {
+        localStorage.removeItem(STORAGE_KEYS.writingChallenges);
+        localStorage.removeItem(STORAGE_KEYS.writingDrafts);
+        return this.navigate({ screen: "parentReport" });
+      }
+      return;
+    }
+    if (action === "writingTraining") return this.navigate({ screen: "writingGrade" });
+    if (action === "writingGrade") return this.navigate({ screen: "writingList", grade: Number(element.dataset.grade) });
+    if (action === "writingItem") {
+      const challengeId = element.dataset.challengeId;
+      return this.navigate({
+        screen: "writingChallengeInvite",
+        grade: this.state.grade,
+        lessonId: element.dataset.lessonId,
+        passageId: element.dataset.passageId,
+        writingChallengeId: challengeId,
+        writingAnswer: this.readWritingDraft(challengeId),
+        writingResult: null,
+        writingEvaluation: null,
+        writingHintLevel: 0,
+        writingShowPassage: false,
+        writingReturnScreen: "writingList"
+      });
+    }
     if (action === "recommend") {
       const target = element.dataset.target;
       if (target === "easy") return this.navigate({ screen: "grade", mode: "easy", grade: 1 });
@@ -891,18 +998,32 @@ class WebKokugoApp {
     }
     if (action === "lesson") return this.navigate({ screen: "passage", lessonId: element.dataset.lessonId, passageId: element.dataset.passageId, questionIndex: 0 });
     if (action === "startQuestions") return this.navigate({ screen: "question", questionIndex: 0, selectedIndex: null, correct: null, retryMode: false, usedReread: false, usedSpeech: false, showPassageAgain: false, sessionSeed: createSeed() });
-    if (action === "openWritingChallenge") return this.navigate({ screen: "writingChallengeInvite", writingChallengeId: element.dataset.challengeId, writingAnswer: "", writingResult: null });
-    if (action === "startWritingChallenge") return this.navigate({ screen: "writingChallenge", writingAnswer: "", writingResult: null });
+    if (action === "openWritingChallenge") {
+      const challengeId = element.dataset.challengeId;
+      return this.navigate({ screen: "writingChallengeInvite", writingChallengeId: challengeId, writingAnswer: this.readWritingDraft(challengeId), writingResult: null, writingEvaluation: null, writingHintLevel: 0, writingShowPassage: false, writingReturnScreen: "passage" });
+    }
+    if (action === "startWritingChallenge") return this.navigate({ screen: "writingChallenge", writingResult: null, writingEvaluation: null });
     if (action === "skipWritingChallenge") {
       this.saveWritingChallengeEvent("skipped", "");
-      return this.navigate({ screen: "passage", writingAnswer: "", writingResult: null });
+      return this.navigate({ screen: this.state.writingReturnScreen, writingResult: null, writingEvaluation: null });
+    }
+    if (action === "toggleWritingPassage") return this.navigate({ writingShowPassage: !this.state.writingShowPassage });
+    if (action === "writingHint") {
+      const context = this.currentWritingChallengeContext();
+      if (!context || this.state.writingHintLevel >= (context.challenge.hints || []).length) return;
+      this.saveWritingChallengeEvent("hint", this.state.writingAnswer);
+      return this.navigate({ writingHintLevel: this.state.writingHintLevel + 1 });
     }
     if (action === "checkWritingAnswer") return this.checkWritingAnswer();
     if (action === "retryWritingChallenge") {
-      this.saveWritingChallengeEvent("retry", this.state.writingAnswer);
-      return this.navigate({ screen: "writingChallenge", writingAnswer: "", writingResult: null });
+      this.saveWritingChallengeEvent("retry", this.state.writingAnswer, this.state.writingEvaluation);
+      return this.navigate({ screen: "writingChallenge", writingResult: null, writingEvaluation: null });
     }
-    if (action === "finishWritingChallenge") return this.navigate({ screen: "passage", writingAnswer: "", writingResult: null });
+    if (action === "finishWritingChallenge") {
+      const context = this.currentWritingChallengeContext();
+      this.saveWritingDraft(context?.challenge?.challengeId, "");
+      return this.navigate({ screen: this.state.writingReturnScreen, writingAnswer: "", writingResult: null, writingEvaluation: null });
+    }
     if (action === "togglePassage") {
       const opening = !this.state.showPassageAgain;
       return this.navigate({ showPassageAgain: opening, usedReread: this.state.usedReread || opening });
@@ -953,6 +1074,9 @@ class WebKokugoApp {
 
   goBack() {
     if (this.state.screen === "home") return;
+    if (this.state.screen === "writingChallengeInvite" && this.state.writingReturnScreen === "writingList") {
+      return this.navigate({ screen: "writingList" });
+    }
     const map = {
       grade: "home",
       works: "grade",
@@ -960,6 +1084,8 @@ class WebKokugoApp {
       question: "passage",
       result: "question",
       explanation: "question",
+      writingGrade: "home",
+      writingList: "writingGrade",
       writingChallengeInvite: "passage",
       writingChallenge: "writingChallengeInvite",
       testGrade: "home",
@@ -1053,10 +1179,10 @@ class WebKokugoApp {
     const context = this.currentWritingChallengeContext();
     if (!context || !this.state.writingAnswer.trim()) return;
     const answer = limitWritingAnswer(this.state.writingAnswer, context.challenge.maxLength);
-    const result = isExactWritingChallengeAnswer(answer, context.challenge) ? "exact_match" : "model_check";
+    const evaluation = evaluateWritingAnswer(answer, context.challenge);
     this.state.writingAnswer = answer;
-    this.saveWritingChallengeEvent(result, answer);
-    this.navigate({ screen: "writingChallenge", writingResult: result });
+    this.saveWritingChallengeEvent(evaluation.resultType, answer, evaluation);
+    this.navigate({ screen: "writingChallenge", writingResult: evaluation.resultType, writingEvaluation: evaluation });
   }
 
   updateWritingCounter(maxLength) {
@@ -1066,7 +1192,26 @@ class WebKokugoApp {
     if (button) button.disabled = !this.state.writingAnswer.trim() || graphemeLength(this.state.writingAnswer) > maxLength;
   }
 
-  saveWritingChallengeEvent(eventType, answer) {
+  readWritingDraft(challengeId) {
+    if (!challengeId) return "";
+    try {
+      const drafts = JSON.parse(localStorage.getItem(STORAGE_KEYS.writingDrafts) || "{}");
+      return String(drafts?.[challengeId] || "");
+    } catch {
+      return "";
+    }
+  }
+
+  saveWritingDraft(challengeId, answer) {
+    if (!challengeId) return;
+    let drafts = {};
+    try { drafts = JSON.parse(localStorage.getItem(STORAGE_KEYS.writingDrafts) || "{}"); } catch { drafts = {}; }
+    if (String(answer || "").trim()) drafts[challengeId] = String(answer);
+    else delete drafts[challengeId];
+    localStorage.setItem(STORAGE_KEYS.writingDrafts, JSON.stringify(drafts));
+  }
+
+  saveWritingChallengeEvent(eventType, answer, evaluation = null) {
     const context = this.currentWritingChallengeContext();
     if (!context) return;
     const events = readArray(STORAGE_KEYS.writingChallenges);
@@ -1077,6 +1222,9 @@ class WebKokugoApp {
       grade: this.state.grade,
       eventType,
       answer: String(answer || ""),
+      challengeType: canonicalWritingType(context.challenge),
+      criteriaMet: evaluation?.metCriteria || [],
+      criteriaTotal: Number(evaluation?.requiredCriteriaCount || 0),
       recordedAt: Date.now()
     });
     localStorage.setItem(STORAGE_KEYS.writingChallenges, JSON.stringify(events.slice(-500)));

@@ -7,6 +7,8 @@ export const LESSON_FILES = [
   "./assets/lessons/thinking_challenge_lessons.json"
 ];
 
+export const WRITING_CHALLENGE_FILE = "./assets/lessons/writing_challenges.json";
+
 export async function loadLessons() {
   const loaded = await Promise.all(
     LESSON_FILES.map(async (file) => {
@@ -20,6 +22,22 @@ export async function loadLessons() {
     })
   );
   const lessons = loaded.flatMap((data) => data.lessons || []);
+  const supplemental = await fetch(WRITING_CHALLENGE_FILE)
+    .then((response) => response.ok ? response.json() : { writingChallenges: [] })
+    .catch(() => ({ writingChallenges: [] }));
+  const byPassage = new Map();
+  for (const challenge of supplemental.writingChallenges || []) {
+    const key = `${challenge.lessonId}::${challenge.passageId}`;
+    if (!byPassage.has(key)) byPassage.set(key, []);
+    byPassage.get(key).push(challenge);
+  }
+  for (const lesson of lessons) {
+    for (const passage of lesson.passages || []) {
+      const additions = byPassage.get(`${lesson.lessonId}::${passage.passageId}`) || [];
+      const merged = [...(passage.writingChallenges || []), ...additions];
+      passage.writingChallenges = [...new Map(merged.map((item) => [item.challengeId, item])).values()];
+    }
+  }
   return {
     version: 1,
     generatedAt: new Date().toISOString().slice(0, 10),
