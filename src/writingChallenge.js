@@ -58,6 +58,36 @@ export function isExactWritingChallengeAnswer(answer, challenge) {
   return (challenge?.acceptedAnswers || []).some((candidate) => normalizeExtractAnswer(candidate) === normalized);
 }
 
+const LOCAL_NEGATION_PATTERNS = [
+  /^では?な(?:い|く|かった)/u,
+  /^じゃな(?:い|く|かった)/u,
+  /^でもな(?:い|く|かった)/u,
+  /^もな(?:い|く|かった)/u,
+  /^なかった/u,
+  /^はどうでも(?:よい|いい)/u,
+  /^どうでも(?:よい|いい)/u,
+  /^は(?:必要|大切|重要)(?:では|じゃ)?な/u,
+  /^は関係(?:が)?な/u,
+  /^(?:という)?わけではな/u,
+  /^(?:という)?ことではな/u,
+  /^とは(?:い|言)えな/u
+];
+
+export function containsNonNegatedCriterionAlternative(answer, alternative) {
+  const normalized = normalizeExtractAnswer(answer);
+  const item = normalizeExtractAnswer(alternative);
+  if (!item) return false;
+  let offset = 0;
+  while (offset < normalized.length) {
+    const index = normalized.indexOf(item, offset);
+    if (index < 0) return false;
+    const tail = normalized.slice(index + item.length, index + item.length + 24).replace(/^[\s、,]+/u, "");
+    if (!LOCAL_NEGATION_PATTERNS.some((pattern) => pattern.test(tail))) return true;
+    offset = index + item.length;
+  }
+  return false;
+}
+
 export function evaluateWritingAnswer(answer, challenge) {
   const normalized = normalizeExtractAnswer(answer);
   if (!normalized) return { resultType: "empty", title: "答えを書いてから確かめましょう", metCriteria: [], requiredCriteriaCount: 0 };
@@ -73,18 +103,15 @@ export function evaluateWritingAnswer(answer, challenge) {
       return item && normalized.includes(item);
     });
     const metCriteria = contradiction ? [] : (challenge.criteria || []).filter((criterion) =>
-      (criterion.alternatives || []).some((alternative) => {
-        const item = normalizeExtractAnswer(alternative);
-        return item && normalized.includes(item);
-      })
+      (criterion.alternatives || []).some((alternative) => containsNonNegatedCriterionAlternative(normalized, alternative))
     ).map((criterion) => criterion.label);
     const required = (challenge.criteria || []).filter((criterion) => criterion.required !== false);
     const requiredMet = required.filter((criterion) => metCriteria.includes(criterion.label)).length;
     if (!contradiction && required.length && requiredMet === required.length) {
-      return { resultType: "criteria_complete", title: "大切な二つの点が書けています", metCriteria, requiredCriteriaCount: required.length };
+      return { resultType: "criteria_complete", title: "関係する言葉が二つ見つかりました。本文やお手本と比べて確認しましょう。", metCriteria, requiredCriteriaCount: required.length };
     }
     if (!contradiction && metCriteria.length) {
-      return { resultType: "criteria_partial", title: "大切な点が一つ書けています。もう一つ加えてみましょう", metCriteria, requiredCriteriaCount: required.length };
+      return { resultType: "criteria_partial", title: "関係する言葉が一つ見つかりました。本文やお手本と比べて確認しましょう。", metCriteria, requiredCriteriaCount: required.length };
     }
     return { resultType: "model_check", title: "お手本と本文を比べてみましょう", metCriteria: [], requiredCriteriaCount: required.length };
   }

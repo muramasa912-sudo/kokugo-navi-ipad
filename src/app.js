@@ -70,6 +70,7 @@ class WebKokugoApp {
       writingShowPassage: false,
       writingReturnScreen: "passage",
       writingIsComposing: false,
+      writingLimitReached: false,
       settings
     };
   }
@@ -500,6 +501,7 @@ class WebKokugoApp {
                 ? `<input type="text" inputmode="text" enterkeyhint="done" data-action="writingAnswer" value="${escapeAttr(this.state.writingAnswer)}">`
                 : `<textarea rows="5" inputmode="text" enterkeyhint="enter" data-action="writingAnswer">${escapeHtml(this.state.writingAnswer)}</textarea>`}
               <span class="writing-count" data-writing-count>${length}／${challenge.maxLength}文字</span>
+              <span class="writing-limit-message" data-writing-limit-message ${this.state.writingLimitReached ? "" : "hidden"}>${challenge.maxLength}文字までなので、これ以上追加できません。</span>
             </label>
             <button class="primary-button wide" data-action="checkWritingAnswer" ${!this.state.writingAnswer.trim() || length > challenge.maxLength ? "disabled" : ""}>答えを確かめる</button>
             <button class="ghost-button wide" data-action="skipWritingChallenge">今回はやめる</button>
@@ -507,8 +509,8 @@ class WebKokugoApp {
             <div class="writing-result ${evaluation.resultType === "exact_match" ? "exact" : "model-check"}" aria-live="polite">
               <h3>${escapeHtml(evaluation.title)}</h3>
               <p><strong>あなたの答え：</strong>${escapeHtml(this.state.writingAnswer)}</p>
-              ${type !== "extract" ? "<p><strong>自動判定は学習の目安です。</strong></p>" : ""}
-              ${(challenge.criteria || []).length ? `<h4>評価観点</h4>${challenge.criteria.map((criterion) => `<p>${evaluation.metCriteria.includes(criterion.label) ? "✓" : "□"} ${escapeHtml(criterion.label)}</p>`).join("")}` : ""}
+              ${type !== "extract" ? "<p><strong>自動判定は学習の目安です。</strong> 言葉があっても、近くで否定されている場合は数えません。</p>" : ""}
+              ${(challenge.criteria || []).length ? `<h4>関係する言葉の確認</h4>${challenge.criteria.map((criterion) => `<p>${evaluation.metCriteria.includes(criterion.label) ? "語句あり" : "要確認"}：${escapeHtml(criterion.label)}</p>`).join("")}` : ""}
               ${(challenge.selfChecks || []).length ? `<h4>自分で確かめよう</h4>${challenge.selfChecks.map((item) => `<p>□ ${escapeHtml(item)}</p>`).join("")}` : ""}
               <p><strong>お手本例：</strong>${escapeHtml(modelAnswer)}</p>
               ${type !== "extract" ? "<p>お手本は唯一の正解ではありません。</p>" : ""}
@@ -714,7 +716,7 @@ class WebKokugoApp {
         <div class="report-card-grid compact-report-grid">
           <article class="report-summary-card"><h3>挑戦した問題</h3><p>${writingAttempted}問</p></article>
           <article class="report-summary-card"><h3>本文から正しく抜き出せた問題</h3><p>${writingExact}問</p></article>
-          <article class="report-summary-card"><h3>理由を二つの観点で説明できた問題</h3><p>${writingReasonComplete}問</p></article>
+          <article class="report-summary-card"><h3>二つの観点に関係する言葉が見つかった問題</h3><p>${writingReasonComplete}問</p></article>
           <article class="report-summary-card"><h3>自分の考えを書いた問題</h3><p>${writingOpinions}問</p></article>
           <article class="report-summary-card"><h3>お手本を確認した問題</h3><p>${writingModelChecks}問</p></article>
           <article class="report-summary-card"><h3>学び直し</h3><p>ヒント使用 ${writingHints}回<br>もう一度書いた回数 ${writingRetries}回<br>今回はやめた回数 ${writingSkips}回</p></article>
@@ -907,10 +909,11 @@ class WebKokugoApp {
         this.state.writingIsComposing = false;
         const context = this.currentWritingChallengeContext();
         const maxLength = context?.challenge?.maxLength || 20;
+        const limitReached = graphemeLength(writingField.value) > maxLength;
         this.state.writingAnswer = limitWritingAnswer(writingField.value, maxLength);
         writingField.value = this.state.writingAnswer;
         this.saveWritingDraft(context?.challenge?.challengeId, this.state.writingAnswer);
-        this.updateWritingCounter(maxLength);
+        this.updateWritingCounter(maxLength, limitReached);
       });
       writingField.addEventListener("focus", () => {
         window.setTimeout(() => writingField.scrollIntoView({ block: "center", behavior: "smooth" }), 250);
@@ -932,11 +935,12 @@ class WebKokugoApp {
       const context = this.currentWritingChallengeContext();
       const maxLength = context?.challenge?.maxLength || 20;
       const composing = Boolean(event?.isComposing || this.state.writingIsComposing);
+      const limitReached = !composing && graphemeLength(element.value) > maxLength;
       const value = composing ? element.value : limitWritingAnswer(element.value, maxLength);
       this.state.writingAnswer = value;
       if (!composing && element.value !== value) element.value = value;
       if (!composing) this.saveWritingDraft(context?.challenge?.challengeId, value);
-      this.updateWritingCounter(maxLength);
+      this.updateWritingCounter(maxLength, limitReached);
       return;
     }
     if (action === "onboardingNext") return this.navigate({ onboardingPage: Math.min(3, this.state.onboardingPage + 1) });
@@ -977,7 +981,8 @@ class WebKokugoApp {
         writingEvaluation: null,
         writingHintLevel: 0,
         writingShowPassage: false,
-        writingReturnScreen: "writingList"
+        writingReturnScreen: "writingList",
+        writingLimitReached: false
       });
     }
     if (action === "recommend") {
@@ -1000,9 +1005,9 @@ class WebKokugoApp {
     if (action === "startQuestions") return this.navigate({ screen: "question", questionIndex: 0, selectedIndex: null, correct: null, retryMode: false, usedReread: false, usedSpeech: false, showPassageAgain: false, sessionSeed: createSeed() });
     if (action === "openWritingChallenge") {
       const challengeId = element.dataset.challengeId;
-      return this.navigate({ screen: "writingChallengeInvite", writingChallengeId: challengeId, writingAnswer: this.readWritingDraft(challengeId), writingResult: null, writingEvaluation: null, writingHintLevel: 0, writingShowPassage: false, writingReturnScreen: "passage" });
+      return this.navigate({ screen: "writingChallengeInvite", writingChallengeId: challengeId, writingAnswer: this.readWritingDraft(challengeId), writingResult: null, writingEvaluation: null, writingHintLevel: 0, writingShowPassage: false, writingReturnScreen: "passage", writingLimitReached: false });
     }
-    if (action === "startWritingChallenge") return this.navigate({ screen: "writingChallenge", writingResult: null, writingEvaluation: null });
+    if (action === "startWritingChallenge") return this.navigate({ screen: "writingChallenge", writingResult: null, writingEvaluation: null, writingLimitReached: false });
     if (action === "skipWritingChallenge") {
       this.saveWritingChallengeEvent("skipped", "");
       return this.navigate({ screen: this.state.writingReturnScreen, writingResult: null, writingEvaluation: null });
@@ -1017,12 +1022,12 @@ class WebKokugoApp {
     if (action === "checkWritingAnswer") return this.checkWritingAnswer();
     if (action === "retryWritingChallenge") {
       this.saveWritingChallengeEvent("retry", this.state.writingAnswer, this.state.writingEvaluation);
-      return this.navigate({ screen: "writingChallenge", writingResult: null, writingEvaluation: null });
+      return this.navigate({ screen: "writingChallenge", writingResult: null, writingEvaluation: null, writingLimitReached: false });
     }
     if (action === "finishWritingChallenge") {
       const context = this.currentWritingChallengeContext();
       this.saveWritingDraft(context?.challenge?.challengeId, "");
-      return this.navigate({ screen: this.state.writingReturnScreen, writingAnswer: "", writingResult: null, writingEvaluation: null });
+      return this.navigate({ screen: this.state.writingReturnScreen, writingAnswer: "", writingResult: null, writingEvaluation: null, writingLimitReached: false });
     }
     if (action === "togglePassage") {
       const opening = !this.state.showPassageAgain;
@@ -1150,6 +1155,7 @@ class WebKokugoApp {
         screen: writingChallenge ? "writingChallengeInvite" : "passage",
         writingChallengeId: writingChallenge?.challengeId || null,
         writingAnswer: "",
+        writingLimitReached: false,
         writingResult: null,
         selectedIndex: null,
         correct: null,
@@ -1185,9 +1191,12 @@ class WebKokugoApp {
     this.navigate({ screen: "writingChallenge", writingResult: evaluation.resultType, writingEvaluation: evaluation });
   }
 
-  updateWritingCounter(maxLength) {
+  updateWritingCounter(maxLength, limitReached = false) {
+    this.state.writingLimitReached = Boolean(limitReached);
     const counter = this.root.querySelector("[data-writing-count]");
     if (counter) counter.textContent = `${graphemeLength(this.state.writingAnswer)}／${maxLength}文字`;
+    const message = this.root.querySelector("[data-writing-limit-message]");
+    if (message) message.hidden = !this.state.writingLimitReached;
     const button = this.root.querySelector('[data-action="checkWritingAnswer"]');
     if (button) button.disabled = !this.state.writingAnswer.trim() || graphemeLength(this.state.writingAnswer) > maxLength;
   }

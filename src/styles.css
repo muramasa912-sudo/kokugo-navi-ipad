@@ -805,8 +805,6 @@ ruby rt {
 .writing-answer-field textarea,
 .writing-answer-field input {
   width: 100%;
-  min-height: 112px;
-  resize: vertical;
   padding: 14px;
   border: 2px solid var(--line);
   border-radius: 8px;
@@ -816,6 +814,21 @@ ruby rt {
   line-height: 1.6;
   overflow-wrap: anywhere;
   scroll-margin-bottom: 42vh;
+}
+
+.writing-answer-field textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.writing-answer-field input {
+  min-height: 56px;
+  height: auto;
+}
+
+.writing-limit-message {
+  color: #91451f;
+  font-weight: 600;
 }
 
 .writing-answer-field textarea:focus,

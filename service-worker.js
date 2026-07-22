@@ -1,4 +1,4 @@
-const CACHE_NAME = "kokugo-navi-ipad-v19";
+const CACHE_NAME = "kokugo-navi-ipad-v20";
 
 const CACHE_FILES = [
   "./",

@@ -1896,6 +1896,9 @@
               ],
               "modelAnswer": "みんなで観察",
               "explanation": "『みんなで観察すると』の部分から、原因を確かめるために観察したことが分かります。",
+              "evidence": "みんなで観察すると",
+              "hints": ["ごみの原因を話し合ったあとの文を読みましょう。", "みんなが原因を確かめるためにした行動を探しましょう。"],
+              "skillTags": ["evidence", "reason"],
               "optional": true,
               "targetGrades": [4],
               "inputMode": "text"
@@ -2119,6 +2122,9 @@
               ],
               "modelAnswer": "メモを取ってから歩き始めました",
               "explanation": "大切な話を聞きのがさないために、リョウが行動を変えた部分です。",
+              "evidence": "メモを取ってから歩き始めました",
+              "hints": ["集合に間に合ったあとの文を読みましょう。", "次の見学でリョウが変えた行動を探しましょう。"],
+              "skillTags": ["evidence", "sequence"],
               "optional": true,
               "targetGrades": [4],
               "inputMode": "text"
@@ -2342,6 +2348,9 @@
               ],
               "modelAnswer": "孫からの手紙",
               "explanation": "おばあさんが毎週ベンチで待っていた理由につながる言葉です。",
+              "evidence": "孫からの手紙",
+              "hints": ["おばあさんが待つ理由を話した文を読みましょう。", "遠くに住むだれから届くものかを探しましょう。"],
+              "skillTags": ["content", "evidence"],
               "optional": true,
               "targetGrades": [4],
               "inputMode": "text"
@@ -2562,6 +2571,9 @@
               ],
               "modelAnswer": "大事なことを届けるつもりで",
               "explanation": "聞く人を思い浮かべて読むことが、声の届け方を変えると先輩は伝えています。",
+              "evidence": "大事なことを届けるつもりで読む",
+              "hints": ["六年生の先輩が結衣に話した言葉を読みましょう。", "何を届けるつもりで読むのかに注目しましょう。"],
+              "skillTags": ["evidence", "reason"],
               "optional": true,
               "targetGrades": [5],
               "inputMode": "text"
@@ -2781,6 +2793,9 @@
               ],
               "modelAnswer": "忘れたくない時間",
               "explanation": "勝ち負けではなく、友と走った時間を祖父が大切にしていたことが分かります。",
+              "evidence": "忘れたくない時間",
+              "hints": ["写真を大切にしまっていた理由を話す文を読みましょう。", "祖父が結果より大切にした時間を表す言葉を探しましょう。"],
+              "skillTags": ["evidence", "theme"],
               "optional": true,
               "targetGrades": [5],
               "inputMode": "text"
@@ -3000,6 +3015,9 @@
               ],
               "modelAnswer": "少し驚いてから笑いました",
               "explanation": "『ありがとうございます』という言葉を受け取った駅員の表情の変化です。",
+              "evidence": "少し驚いてから笑いました",
+              "hints": ["マナが駅員に声をかけた直後を読みましょう。", "駅員の表情がどう変わったかを表す言葉を探しましょう。"],
+              "skillTags": ["evidence", "feeling"],
               "optional": true,
               "targetGrades": [5],
               "inputMode": "text"
@@ -3219,6 +3237,9 @@
               ],
               "modelAnswer": "次に使う人のために整えること",
               "explanation": "自分たちのためだけでなく、次に使う人を考えた大地の気づきです。",
+              "evidence": "次に使う人のために整えること",
+              "hints": ["五年生の言葉を聞いたあとの大地の気づきを読みましょう。", "だれのために整えることも仕事なのかを探しましょう。"],
+              "skillTags": ["evidence", "theme"],
               "optional": true,
               "targetGrades": [6],
               "inputMode": "text"
@@ -3438,6 +3459,9 @@
               ],
               "modelAnswer": "見えない強さ",
               "explanation": "見返りを求めずに光り続ける灯台の働きを表した言葉です。",
+              "evidence": "見えない強さ",
+              "hints": ["灯台が夜ごと光り続ける理由のあとの文を読みましょう。", "安全を支える仕事にある強さを表す言葉を探しましょう。"],
+              "skillTags": ["evidence", "theme"],
               "optional": true,
               "targetGrades": [6],
               "inputMode": "text"
@@ -3658,6 +3682,9 @@
               ],
               "modelAnswer": "自分を支えていた",
               "explanation": "日々の小さな助けも、自分を支える大切な力だったとレンは気づきました。",
+              "evidence": "小さな助けも自分を支えていた",
+              "hints": ["レンが友だちの助けを思い出したあとの文を読みましょう。", "小さな助けが自分に何をしていたかを探しましょう。"],
+              "skillTags": ["evidence", "theme"],
               "optional": true,
               "targetGrades": [6],
               "inputMode": "text"
