@@ -1,21 +1,21 @@
 {
-  "name": "小学生国語ナビ",
-  "short_name": "国語ナビ",
-  "start_url": "./index.html",
+  "name": "小学生算数ナビ",
+  "short_name": "算数ナビ",
+  "description": "低学年から高学年まで、図解・読み上げ・先生コメントで考え方を学べる算数学習アプリです。",
+  "lang": "ja-JP",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#f5f5f5",
+  "orientation": "any",
+  "background_color": "#f6fbff",
+  "theme_color": "#2576c8",
+  "categories": ["education", "kids"],
   "icons": [
     {
-      "src": "./assets/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./assets/icons/icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
